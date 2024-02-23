@@ -1,0 +1,31 @@
+:root{
+    /*=========== Colors ===========*/
+    --body-color: #061D26;
+    --label-color: #BFAEA8;
+    --line-color: #204959;
+    /*===========Font and topography===========*/
+    --h3-font-size: 1rem;
+}
+/* ========== BASE ========== */
+*{
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+.container-form{
+    background-color: var(--body-color);
+    padding: 20px;
+}
+label{
+    color: var(--label-color);
+    font-size: 18px;
+    font-weight: 400;
+}
+.h3-center-text{
+    display: flex;
+    justify-content: center;
+}
+.h3-center-text h3{
+    color: #204959;
+    font-size: 30px;
+}
