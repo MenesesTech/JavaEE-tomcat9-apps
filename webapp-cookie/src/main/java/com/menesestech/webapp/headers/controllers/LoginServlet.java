@@ -1,8 +1,9 @@
 package com.menesestech.webapp.headers.controllers;
 
+import com.menesestech.webapp.headers.services.LoginService;
+import com.menesestech.webapp.headers.services.LoginServiceImpl;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.Optional;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -19,11 +20,9 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Cookie[] cookies = req.getCookies() != null ? req.getCookies() : new Cookie[0];
-        Optional<String> cookieOptional = Arrays.stream(cookies)
-                .filter(c -> "username".equals(c.getName()))
-                .map(Cookie::getValue)
-                .findAny();
+        //Obtiene las cookies de la solicitud
+        LoginService auth = new LoginServiceImpl();
+        Optional<String> cookieOptional = auth.getUsername(req);
         if (cookieOptional.isPresent()) {
             resp.setContentType("text/html;charset=UTF-8");
             try (PrintWriter out = resp.getWriter()) {
@@ -34,7 +33,9 @@ public class LoginServlet extends HttpServlet {
                 out.println("<title>Hola" + cookieOptional.get() + "</title>");
                 out.println("</head>");
                 out.println("<body>");
-                out.println("<h1>Hola" + cookieOptional.get() + " y has iniciado sesion anteriormente</h1>");
+                out.println("<h1>Hola" + cookieOptional.get() + "has iniciado sesion con éxito!</h1>");
+                out.println("<p><a href=\"" + req.getContextPath() + "/index.html\">volver</a></p>");
+                out.println("<p><a href=\"" + req.getContextPath() + "/logout\">cerrar sesión</a></p>");
                 out.println("</body>");
                 out.println("</html>");
             }
@@ -52,24 +53,11 @@ public class LoginServlet extends HttpServlet {
         if (USERNAME.equals(username) && PASSWORD.equals(password)) {
             Cookie usernameCookie = new Cookie("username", username);
             response.addCookie(usernameCookie);
-
-            response.setContentType("text/html;charset=UTF-8");
-            try (PrintWriter out = response.getWriter()) {
-                out.println("<!DOCTYPE html>");
-                out.println("<html>");
-                out.println("<head>");
-                out.println("<link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css\" rel=\"stylesheet\">");
-                out.println("<title>Iniciar Sesión</title>");
-                out.println("</head>");
-                out.println("<body>");
-                out.println("<h1>Login correcto!</h1>");
-                out.println("<h3>Hola " + username + " has iniciado sesion con exito!</h3>");
-                out.println("</body>");
-                out.println("</html>");
-            }
+            response.sendRedirect(request.getContextPath()+"/login.html");
         } else {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Lo sentimos no esta autorizado a ingresar a esta pagina!!");
         }
+
     }
 
 }
